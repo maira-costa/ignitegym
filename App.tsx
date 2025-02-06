@@ -13,8 +13,8 @@ import { Center, GluestackUIProvider, Text } from "@gluestack-ui/themed"; // npm
 
 import { config } from "./config/gluestack-ui.config"; // npx gluestack-ui-scripts eject-theme => cria a pasta config, que contem o arquivo gluestack-ui.config.ts com todos os tokens, que podem ser customizados
 
+import { Routes } from "@routes/index";
 import { Loading } from "@components/Loading";
-import { SignUp } from "@screens/SignUp";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_700Bold, Roboto_400Regular });
@@ -25,7 +25,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? <SignUp /> : <Loading />}
+      {fontsLoaded ? <Routes /> : <Loading />}
     </GluestackUIProvider>
   );
 }
