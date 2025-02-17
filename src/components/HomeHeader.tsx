@@ -17,7 +17,7 @@ export function HomeHeader() {
           Olá,
         </Text>
         <Heading color="$gray100" fontSize="$md">
-          Maíra Costa
+          Pampam
         </Heading>
       </VStack>
       <Icon as={LogOut} color="$gray200" size="xl" />
