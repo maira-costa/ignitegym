@@ -8,8 +8,9 @@ import {
 } from "@gluestack-ui/themed";
 
 import { useNavigation } from "@react-navigation/native";
+import { useForm, Controller } from "react-hook-form"; //npm install react-hook-form em https://www.react-hook-form.com/get-started
 
-import BackGroundImage from "@assets/background.png"; // Para reconhecer a importação é preciso cria o arquivo png.d.ts
+import BackGroundImage from "@assets/background.png"; // Para reconhecer a importação é preciso criar o arquivo png.d.ts
 /*
  Para usar svg instalamos duas bibliotecas: 
   1) npx expo install react-native-svg  
@@ -20,12 +21,35 @@ import Logo from "@assets/logo.svg"; // Para reconhecer a importação é precis
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
+
 export function SignUp() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({}); //control controla todos os inputs e handleSubmit envia os datos de todos os inputs
+
   const navigation = useNavigation();
 
   function handleGoBack() {
     navigation.goBack();
   }
+
+  function handleSignUp({
+    name,
+    email,
+    password,
+    password_confirm,
+  }: FormDataProps) {
+    console.log(data);
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -49,14 +73,80 @@ export function SignUp() {
           </Center>
           <Center gap="$2" flex={1}>
             <Heading color="$gray100">Crie sua conta</Heading>
-            <Input placeholder="Nome" />
-            <Input
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
+            <Controller
+              control={control}
+              name="name"
+              rules={{
+                required: "Informe o nome.",
+              }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Nome"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.name?.message}
+                />
+              )}
             />
-            <Input placeholder="Senha" secureTextEntry />
-            <Button title="Criar e acessar" />
+            <Controller
+              control={control}
+              name="email"
+              rules={{
+                required: "Informe o e-mail.",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "E-mail inválido",
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              rules={{
+                required: "Informe a senha.",
+              }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password_confirm"
+              rules={{
+                required: "Informe a senha.",
+              }}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Confirme sua senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  value={value}
+                  onSubmitEditing={handleSubmit(handleSignUp)}
+                  returnKeyType="send"
+                  errorMessage={errors.password_confirm?.message}
+                />
+              )}
+            />
+            <Button
+              title="Criar e acessar"
+              onPress={handleSubmit(handleSignUp)}
+            />
           </Center>
 
           <Button

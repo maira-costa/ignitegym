@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
+import { useForm, Crontroller, Controller } from "react-hook-form";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
@@ -23,10 +24,12 @@ import { Button } from "@components/Button";
 
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const { control } = useForm();
 
   function handleNewAccount() {
     navigation.navigate("signUp");
   }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -50,12 +53,32 @@ export function SignIn() {
           </Center>
           <Center gap="$2">
             <Heading color="$gray100">Acesse sua conta</Heading>
-            <Input
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
+
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
             />
-            <Input placeholder="Senha" secureTextEntry />
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  secureTextEntry
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
             <Button title="Acessar" />
           </Center>
           <Center flex={1} justifyContent="flex-end" mt="$4">
