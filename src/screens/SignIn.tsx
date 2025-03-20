@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
-import { useForm, Crontroller, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 

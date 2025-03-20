@@ -21,6 +21,10 @@ import Logo from "@assets/logo.svg"; // Para reconhecer a importação é precis
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import * as yup from "yup"; // npm install @hookform/resolvers yup em https://react-hook-form.com/get-started#SchemaValidation
+import {yupResolver} from "@hookform/resolvers/yup" // npm install @hookform/resolvers yup em https://react-hook-form.com/get-started#SchemaValidation
+
+
 type FormDataProps = {
   name: string;
   email: string;
@@ -28,12 +32,21 @@ type FormDataProps = {
   password_confirm: string;
 };
 
+const signUpSchema = yup.object({
+  name: yup.string().required("Informe o nome"),
+  email: yup.string().required("Informe o e-mail").email("E-mail"),
+  password: yup.string().required("Informe a senha").min(6, "A senha deve ter pelo menos 6 dígitos"),
+  password_confirm: yup.string().required("Confirme a senha").oneOf([yup.ref("password"), ""], "A confirmação da senha não confere"),
+})
+
 export function SignUp() {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataProps>({}); //control controla todos os inputs e handleSubmit envia os datos de todos os inputs
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema)
+  }); //control controla todos os inputs e handleSubmit envia os datos de todos os inputs
 
   const navigation = useNavigation();
 
@@ -47,7 +60,7 @@ export function SignUp() {
     password,
     password_confirm,
   }: FormDataProps) {
-    console.log(data);
+    console.log(name, email, password, password_confirm);
   }
 
   return (
@@ -76,9 +89,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="name"
-              rules={{
-                required: "Informe o nome.",
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Nome"
@@ -91,13 +101,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="email"
-              rules={{
-                required: "Informe o e-mail.",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "E-mail inválido",
-                },
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="E-mail"
@@ -112,9 +115,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="password"
-              rules={{
-                required: "Informe a senha.",
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Senha"
@@ -128,9 +128,6 @@ export function SignUp() {
             <Controller
               control={control}
               name="password_confirm"
-              rules={{
-                required: "Informe a senha.",
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Confirme sua senha"
