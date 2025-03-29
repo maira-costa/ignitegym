@@ -68,7 +68,7 @@ export function SignIn() {
               )}
             />
             <Controller
-              name="email"
+              name="password"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <Input

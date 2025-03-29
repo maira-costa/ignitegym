@@ -5,6 +5,9 @@ import {
   Text,
   Heading,
   ScrollView,
+  useToast, 
+  Toast, 
+  ToastTitle
 } from "@gluestack-ui/themed";
 
 import { useNavigation } from "@react-navigation/native";
@@ -21,8 +24,13 @@ import Logo from "@assets/logo.svg"; // Para reconhecer a importação é precis
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { AppError } from "@utils/AppError";
+
 import * as yup from "yup"; // npm install @hookform/resolvers yup em https://react-hook-form.com/get-started#SchemaValidation
 import {yupResolver} from "@hookform/resolvers/yup" // npm install @hookform/resolvers yup em https://react-hook-form.com/get-started#SchemaValidation
+
+import { api } from "@services/api";
+
 
 
 type FormDataProps = {
@@ -48,19 +56,37 @@ export function SignUp() {
     resolver: yupResolver(signUpSchema)
   }); //control controla todos os inputs e handleSubmit envia os datos de todos os inputs
 
+  const toast = useToast();
+
   const navigation = useNavigation();
 
   function handleGoBack() {
     navigation.goBack();
   }
 
-  function handleSignUp({
+  async function handleSignUp({
     name,
     email,
     password,
-    password_confirm,
-  }: FormDataProps) {
-    console.log(name, email, password, password_confirm);
+  }: FormDataProps) { 
+
+    try {
+      const response = await api.post('/users', {name, email, password})
+      console.log(response.data)
+    } catch(error) {
+      const isAppError = error instanceof AppError; // verifica se é um erro tratado
+      const title = isAppError ? error.message : "Não foi possível criar a conta. Tente novamente mais tarde."
+
+      toast.show({
+        placement: 'top',
+        render: () => (
+          <Toast backgroundColor='$red500' action="error" variant="outline">
+            <ToastTitle color="$white">{title}</ToastTitle>
+          </Toast>
+        )
+      })
+    }
+    
   }
 
   return (
