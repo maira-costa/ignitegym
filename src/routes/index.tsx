@@ -7,19 +7,22 @@ import { AppRoutes } from "./app.routes";
 import { useAuth } from "@hooks/useAuth";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
+import { Loading } from "@components/Loading";
 
 export function Routes() {
   const theme = DefaultTheme; //Usa a cor padrão do tema no react navigation
   theme.colors.background = gluestackUIConfig.tokens.colors.gray700; //customiza background
 
-  const { user } = useAuth();
+  const { user, isLoadingUserStorageData } = useAuth();
 
-  console.log("USUÁRIO LOGADO =>", user);
+  if(isLoadingUserStorageData) {
+    return <Loading />
+  }
 
   return (
     <Box flex={1} bg="$gray700">
       <NavigationContainer theme={theme}>
-        <AuthRoutes />
+       {user.id ? <AppRoutes /> : <AuthRoutes/>}
       </NavigationContainer>
     </Box>
   );
