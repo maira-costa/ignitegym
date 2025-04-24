@@ -23,7 +23,9 @@ import { Exercise } from "@screens/Exercise";
 
 type AppRoutes = {
   home: undefined;
-  exercise: undefined;
+  exercise: {
+    exerciseId: string;
+  };
   profile: undefined;
   history: undefined;
 };
