@@ -24,6 +24,8 @@ import { useAuth } from '@hooks/useAuth';
 import { api } from '@services/api';
 import { AppError } from '@utils/AppError';
 
+import defaultUserPhotoImg from '@assets/userPhotoDefault.png';
+
 import { ToastMessage } from "@components/ToastMessage";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -65,9 +67,6 @@ const profileSchema = yup.object({
 export function Profile() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(
-    "https://github.com/maira-costa.png"
-  );
 
   const toast = useToast();
 
@@ -115,7 +114,43 @@ export function Profile() {
             ),
           });
         }
-        setUserPhoto(photoURI); //Atualiza a foto selecionada
+        // setUserPhoto(photoURI); //Atualiza a foto selecionada
+        const fileExtension = photoURI.split('.').pop();
+
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`.toLowerCase(),
+          uri: photoURI,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`
+        } as any;
+
+        const userPhotoUploadForm = new FormData();
+
+        userPhotoUploadForm.append('avatar', photoFile);
+
+        const avatarUpdtedResponse = await api.patch('/users/avatar', userPhotoUploadForm, {
+          headers: {
+            'Content-Type': 'multipart/form-data' // Precisa informar que o formato não é json, mas form-data
+          }
+        });
+
+        const userUpdated = user;
+
+        userUpdated.avatar = avatarUpdtedResponse.data.avatar;
+
+        await updateUserProfile(userUpdated);
+
+        toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            title="Foto atualizada!"
+            action="success"
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+      
       }
     } catch (error) {
       console.log(error);
@@ -178,7 +213,11 @@ export function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
-            source={{ uri: userPhoto }}
+            source={
+              user.avatar  
+              ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` } 
+              : defaultUserPhotoImg
+            }
             alt="Foto do usuário"
             size="xl"
           />
